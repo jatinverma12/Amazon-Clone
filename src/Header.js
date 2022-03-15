@@ -4,8 +4,17 @@ import SearchIcon from '@material-ui/icons/Search'
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket'
 import { Link } from 'react-router-dom'
 import { useStateValue } from './StateProvider'
+import { auth } from './firebase'
 const Header = () => {
-  const [state, dispactch] = useStateValue()
+  const [{ user, basket }, dispactch] = useStateValue()
+
+  const handleAuthenticaton = () => {
+    console.log('I am clicked')
+    if (user) {
+      auth.signOut()
+    }
+  }
+
   return (
     <div className='header'>
       <Link to='/'>
@@ -21,14 +30,24 @@ const Header = () => {
       </div>
 
       <div className='header_nav'>
-        <div className='header_option'>
-          <span className='header_optionLineOne'>Hello Guest</span>
-          <span className='header_optionLineTwo'>Sign In</span>
-        </div>
-        <div className='header_option'>
-          <span className='header_optionLineOne'>Returns</span>
-          <span className='header_optionLineTwo'>& Orders</span>
-        </div>
+        <Link to={!user && '/login'}>
+          <div onClick={handleAuthenticaton} className='header_option'>
+            <span className='header_optionLineOne'>
+              Hello {!user ? 'Guest' : user.email}
+            </span>
+            <span className='header_optionLineTwo'>
+              {user ? 'Sign Out' : 'Sign In'}
+            </span>
+          </div>
+        </Link>
+
+        <Link to='/orders'>
+          <div className='header_option'>
+            <span className='header_optionLineOne'>Returns</span>
+            <span className='header_optionLineTwo'>& Orders</span>
+          </div>
+        </Link>
+
         <div className='header_option'>
           <span className='header_optionLineOne'>Your</span>
           <span className='header_optionLineTwo'>Prime</span>
@@ -37,7 +56,7 @@ const Header = () => {
           <div className='header__optionBasket'>
             <ShoppingBasketIcon />
             <span className='header_optionLineTwo header__basketCount'>
-              {state.basket?.length}
+              {basket?.length}
             </span>
           </div>
         </Link>
